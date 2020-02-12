@@ -27,7 +27,7 @@ const drawBuildings = (buildings) => {
 
   const y = d3.scaleLinear()
       .domain([0, 828])
-      .range([0, height]);
+      .range([height, 0]);
 
   const y_axis = d3.axisLeft(y).tickFormat(d => d + 'm').ticks(3);
   const x_axis = d3.axisBottom(x);
@@ -72,10 +72,10 @@ const drawBuildings = (buildings) => {
   const newRectangles = rectangles.enter();
 
   newRectangles.append("rect")
-      .attr("y", 0)
+      .attr("y", (b) => y(b.height))
       .attr("x", (b) => x(b.name))
       .attr("width", x.bandwidth)
-      .attr("height", (b) => y(b.height))
+      .attr("height", (b) => y(0) - y(b.height))
       .attr("fill", "grey");
 
   document.querySelector('#chart-area').innerHTML = buildings.map(toLine).join('<hr/>');
