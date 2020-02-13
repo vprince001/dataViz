@@ -1,8 +1,6 @@
 const drawBuildings = (buildings) => {
   const toLine = b => `<strong>${b.name}</strong> <i>${b.height}</i>`;
 
-  // const width = 400;
-  // const height = 400;
   const maxHeight = _.maxBy(buildings, "height").height;
 
   const margin = {
@@ -26,7 +24,7 @@ const drawBuildings = (buildings) => {
       .padding(0.3);
 
   const y = d3.scaleLinear()
-      .domain([0, 828])
+      .domain([0, maxHeight])
       .range([height, 0]);
 
   const y_axis = d3.axisLeft(y).tickFormat(d => d + 'm').ticks(3);
