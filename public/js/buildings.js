@@ -30,7 +30,7 @@ const drawBuildings = (buildings) => {
   const y_axis = d3.axisLeft(y).tickFormat(d => d + 'm').ticks(3);
   const x_axis = d3.axisBottom(x);
 
-  const svg = d3.select("#chart-data")
+  const svg = d3.select("#chart-area")
       .append("svg")
       .attr("width", chartSize.width)
       .attr("height", chartSize.height);
@@ -76,7 +76,7 @@ const drawBuildings = (buildings) => {
       .attr("height", (b) => y(0) - y(b.height))
       .attr("fill", "grey");
 
-  document.querySelector('#chart-area').innerHTML = buildings.map(toLine).join('<hr/>');
+  document.querySelector('#chart-data').innerHTML = buildings.map(toLine).join('<hr/>');
 };
 
 const main = () => {

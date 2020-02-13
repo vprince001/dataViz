@@ -1,22 +1,15 @@
+const domains = ["CMP", "PE", "MarketCap","DivYld","QNetProfit","QSales","ROCE"];
+
+const margin = {left: 100, right: 10, top: 10, bottom: 150};
+const chartSize = {width: 800, height: 600};
+
+const width = chartSize.width - margin.left - margin.right;
+const height = chartSize.height - margin.top - margin.bottom;
+
 const drawCompanies = (companies) => {
     const toLine = company => `<strong>${company.Name}</strong> <i>${company.CMP}</i>`;
 
-    const maxHeight = _.maxBy(companies, company => +company.CMP).CMP;
-
-    const margin = {
-        left: 100,
-        right: 10,
-        top: 10,
-        bottom: 150
-    };
-
-    const chartSize = {
-        width: 800,
-        height: 600
-    };
-
-    const width = chartSize.width - margin.left - margin.right;
-    const height = chartSize.height - margin.top - margin.bottom;
+    const maxHeight = _.maxBy(companies, company => company.CMP).CMP;
 
     const x = d3.scaleBand()
         .range([0, width])
@@ -30,44 +23,44 @@ const drawCompanies = (companies) => {
     const y_axis = d3.axisLeft(y).tickFormat(d => d + '₹').ticks(10);
     const x_axis = d3.axisBottom(x);
 
-    const c = d3.scaleOrdinal(d3.schemeTableau10);
+    const c = d3.scaleOrdinal(d3.schemeRdPu[7]);
 
-    const svg = d3.select("#chart-data")
+    const svg = d3.select("#chart-area")
         .append("svg")
         .attr("width", chartSize.width)
         .attr("height", chartSize.height);
 
-    const g = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+    const companiesG = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    g.append("text")
+    companiesG.append("text")
         .attr("class", "x axis-label")
         .attr("x", width/2)
         .attr("y", height+140)
         .text("companies");
 
-    g.append("text")
+    companiesG.append("text")
         .attr("class", "y axis-label")
         .attr("transform", "rotate(-90)")
         .attr("x", -height/2)
         .attr("y", -60)
         .text("CMP (INR)");
 
-    g.append("g")
+    companiesG.append("g")
         .attr("class", "y-axis")
         .call(y_axis);
 
-    g.append("g")
+    companiesG.append("g")
         .attr("class", "x-axis")
         .call(x_axis)
         .attr("transform", `translate(0, ${height})`);
 
-    g.selectAll(".x-axis text")
+    companiesG.selectAll(".x-axis text")
         .attr("x", -5)
         .attr("y", 10)
         .attr("transform", "rotate(-40)")
         .attr("text-anchor", "end");
 
-    const rectangles = g.selectAll("rect").data(companies);
+    const rectangles = companiesG.selectAll("rect").data(companies);
 
     const newRectangles = rectangles.enter();
 
@@ -77,12 +70,46 @@ const drawCompanies = (companies) => {
         .attr("width", x.bandwidth)
         .attr("height", (b) => y(0) - y(b.CMP))
         .attr("fill", (b) => c(b.Name));
+};
 
-    document.querySelector('#chart-area').innerHTML = companies.map(toLine).join('<hr/>');
+const updateCompanies = (companies, domain) => {
+    const svg = d3.select("#chart-area svg");
+    svg.select(".y.axis-label").text(domain);
+
+    const y = d3
+        .scaleLinear()
+        .domain([0, _.maxBy(companies, domain)[domain]])
+        .range([height, 0]);
+
+    const yAxis = d3
+        .axisLeft(y)
+        .tickFormat(d => d + '₹')
+        .ticks(10);
+
+    svg.select(".y-axis").call(yAxis);
+
+    svg.selectAll("rect").data(companies)
+        .transition()
+        .duration(2000)
+        .ease(d3.easeLinear)
+        .attr("y", c => y(c[domain]))
+        .attr("height", c => y(0) - y(c[domain]))
+};
+
+const formatData = ({Name, ...numerics}) => {
+    _.forEach(numerics, (v, k) => (numerics[k] = parseInt(v)));
+    return {Name, ...numerics};
 };
 
 const main = () => {
-    d3.csv('data/companies.csv').then(drawCompanies);
+    d3.csv('data/companies.csv', formatData).then((companies) => {
+            drawCompanies(companies);
+            let i = 0;
+            setInterval(() => {
+                updateCompanies(companies, domains[i % domains.length]);
+                i = i + 1;
+                },5000)
+        })
 };
 
 window.onload = main;
