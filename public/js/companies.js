@@ -101,15 +101,17 @@ const formatData = ({Name, ...numerics}) => {
     return {Name, ...numerics};
 };
 
+const run = (companies) => {
+    drawCompanies(companies);
+    let i = 0;
+    setInterval(() => {
+        updateCompanies(companies, domains[i % domains.length]);
+        i = i + 1;
+    }, 2000)
+};
+
 const main = () => {
-    d3.csv('data/companies.csv', formatData).then((companies) => {
-        drawCompanies(companies);
-        let i = 0;
-        setInterval(() => {
-            updateCompanies(companies, domains[i % domains.length]);
-            i = i + 1;
-        }, 2000)
-    });
+    d3.csv('data/companies.csv', formatData).then(run);
 };
 
 window.onload = main;
