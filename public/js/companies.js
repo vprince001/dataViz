@@ -1,4 +1,4 @@
-const domains = ["CMP", "PE", "MarketCap","DivYld","QNetProfit","QSales","ROCE"];
+const domains = ["PE", "MarketCap", "DivYld", "QNetProfit", "QSales", "ROCE", "CMP"];
 
 const margin = {left: 100, right: 10, top: 10, bottom: 150};
 const chartSize = {width: 800, height: 600};
@@ -34,16 +34,16 @@ const drawCompanies = (companies) => {
 
     companiesG.append("text")
         .attr("class", "x axis-label")
-        .attr("x", width/2)
-        .attr("y", height+140)
+        .attr("x", width / 2)
+        .attr("y", height + 140)
         .text("companies");
 
     companiesG.append("text")
         .attr("class", "y axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height/2)
+        .attr("x", -height / 2)
         .attr("y", -60)
-        .text("CMP (INR)");
+        .text("CMP");
 
     companiesG.append("g")
         .attr("class", "y-axis")
@@ -90,7 +90,7 @@ const updateCompanies = (companies, domain) => {
 
     svg.selectAll("rect").data(companies)
         .transition()
-        .duration(2000)
+        .duration(1000)
         .ease(d3.easeLinear)
         .attr("y", c => y(c[domain]))
         .attr("height", c => y(0) - y(c[domain]))
@@ -103,13 +103,13 @@ const formatData = ({Name, ...numerics}) => {
 
 const main = () => {
     d3.csv('data/companies.csv', formatData).then((companies) => {
-            drawCompanies(companies);
-            let i = 0;
-            setInterval(() => {
-                updateCompanies(companies, domains[i % domains.length]);
-                i = i + 1;
-                },5000)
-        })
+        drawCompanies(companies);
+        let i = 0;
+        setInterval(() => {
+            updateCompanies(companies, domains[i % domains.length]);
+            i = i + 1;
+        }, 2000)
+    });
 };
 
 window.onload = main;
