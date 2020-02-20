@@ -1,0 +1,37 @@
+html {
+    margin: 5px;
+}
+svg {
+    border: 1px solid grey;
+}
+.axis-label {
+    font-size: 20px;
+    text-anchor: middle;
+}
+.x-axis text {
+    font-weight: bold;
+}
+
+.close {
+    fill: none;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+.avg {
+    fill: none;
+    stroke: red;
+    stroke-width: 1px;
+}
+
+#slider-container {
+    position: relative;
+    margin-top: 2px;
+    height:30px;
+    width: 650px;
+    background-color: #eeeef5;
+}
+
+.container {
+    margin: 0
+}
